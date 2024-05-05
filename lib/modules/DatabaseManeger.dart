@@ -27,24 +27,6 @@ class DatabaseManeger {
     if(decodedResponse[0]==null) return {"Error": "Invalid information "};
     return decodedResponse[0];
   }
-  Future<List> getAllAccounts( String param,String value,String category) async {
-    var response = await post(url, body: {
-      "param":param,
-      "value": value,
-      "category": category,
-      "command": "getAllAccounts",
-    });
-    List<dynamic> decodedResponse = jsonDecode(response.body);
-    return decodedResponse;
-  }
-  Future<bool> addAccount(Map<String, dynamic> addAccountData) async{
-    addAccountData["command"]="addAccount";
-    var response =await post(url, body: addAccountData);
-    Map<String , dynamic> decodedResponse = jsonDecode(response.body);
-
-    if(decodedResponse["success"]==true) return true;
-    return false ;
-  }
   updateAccount(Map<String, dynamic> addAccountData) async {
     addAccountData["command"] ="updateAccount";
     var response = await post(url, body: addAccountData);
@@ -57,44 +39,7 @@ class DatabaseManeger {
   }
 
   //fire section
-  Future<List<Fire>> getAllLocalFires(String city) async {
-    var response = await post(url, body: {"command": "getAllLocalFires" , "city": city});
 
-    List<dynamic> decodedResponse = jsonDecode(response.body);
-    List<Fire> listOfFires = decodedResponse.map((item) {
-      return Fire.fromMap(item);
-    }).toList();
-    return listOfFires;
-  }
-
-  //reports section
-  Future<List<Report>>getRespondentReports(String city) async {
-    print (city);
-
-    var response = await post(url, body: {"command": "getRespondentReports", "city": city });
-
-    List<dynamic> decodedResponse = jsonDecode(response.body);
-    List<Report> listOfReports = decodedResponse.map((item) {
-      return Report.fromMap(item);
-    }).toList();
-    return listOfReports;
-  }
-  Future<bool> updateRespondentReportStatus(int id ,int respondentId , String status)async {
-
-
-    var response = await post(url, body: {
-      "command": "updateRespondentReportStatus",
-      "respondentId": respondentId.toString(),
-      "reportId": id.toString(),
-      "newStatus" : status.toString()
-    });
-
-    Map<String ,dynamic> decodedResponse = jsonDecode(response.body);
-
-
-    return bool.parse(decodedResponse["success"].toString());
-
-  }
   //Fires section
   Future<List<Fire>> getActiveLocalFires(String  city) async {
     var response=await post(url,body: {
@@ -107,22 +52,7 @@ class DatabaseManeger {
     }).toList();
     return listOfActiveFires;
   }
-  Future<void> addNewFire(Fire fire , int reportId)async{
-    Map<String ,dynamic> data=fire.toMap();
-    data["command"]="addNewFire";
-    data["reportId"]="reportId";
 
-    var response =await post(url ,body:data );
-
-  }
-  Future<void> assignToFire(int fireId, Report report ,bool isOptimal)async{
-    Map<String ,dynamic> data=report.toMap();
-    data["command"]="assignReportToFire";
-    data["fireId"]=fireId.toString();
-    data["isOptimal"]=isOptimal.toString();
-    var response=await post(url ,body:data );
-
-  }
 
   Future<bool> updateFireStatus (int fireId , int firefighterId , String newStatus)async{
     var response =await post(url ,body:{
@@ -227,14 +157,7 @@ class DatabaseManeger {
 
   }
 
-  deleteAccount(int parse)async {
-    var response = await post(url, body: {
-      "command": "deleteAccount",
-      "id": parse.toString(),
-    });
-    Map<String ,dynamic> decodedResponse = jsonDecode(response.body);
-    return decodedResponse;
-  }
+
 
 
 
