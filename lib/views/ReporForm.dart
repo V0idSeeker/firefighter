@@ -95,17 +95,38 @@ class ReportForm extends StatelessWidget {
                                 if(!formkey.currentState!.validate()) return null;
 
 
-                                String respons=await controller.sendReport();
-                                showDialog(context: context, builder: (context){
-                                  return AlertDialog.adaptive(
-                                    title: Text(respons),
-                                    actions: [
-                                      ElevatedButton(onPressed: (){
-                                        Get.back() ;
-                                        Get.back();
-                                  }, child: Text("Return"))
-                                    ],
+
+                                showDialog(
+                                    barrierDismissible: false,
+                                    context: context, builder: (context){
+
+                                  return PopScope(
+                                    canPop: false,
+                                    child: FutureBuilder(future: controller.sendReport(), builder: (context , snapshot){
+                                      if(snapshot.connectionState==ConnectionState.waiting) return AlertDialog(title: Text("Sending Report"), content: Container(
+                                          width: MediaQuery.of(context).size.width/2,
+                                          height: MediaQuery.of(context).size.height/6,
+                                          alignment: Alignment.center,child: CircularProgressIndicator()),);
+                                      if(snapshot.hasError) return AlertDialog(title: Text("Error"),content: Text("Report did not get sent "),
+                                        actions: [
+                                          ElevatedButton(onPressed: (){
+                                            Navigator.of(context).pop();
+
+                                          }, child: Text("Close"))
+                                        ],);
+                                      return AlertDialog.adaptive(
+                                        title: Text(snapshot.data!),
+                                        actions: [
+                                          ElevatedButton(onPressed: (){
+                                            Navigator.of(context).pop();
+                                            Get.back();
+                                          }, child: Text("Return"))
+                                        ],
+                                      );
+
+                                    }),
                                   );
+
                                 });
                               }, child: Text("Send Report")),
                             ],

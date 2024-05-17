@@ -7,12 +7,42 @@ import 'Report.dart';
 
 class DatabaseManeger {
   late Uri url;
-  String geocodeApiAuth="741499549589927466382x105731";
+  static  String ip="192.168.1.111";
+
 
   DatabaseManeger() {
+    //for local
     url = Uri.http("192.168.1.111", "api/index.php");
+    //for partage
+    //url=Uri.http("192.168.214.111", "api/index.php");
+  }
+  void setIp(String newIp) {
+    ip=newIp;
+    url = Uri.http(ip,"api/index.php");
+
   }
 
+  String getIp()=>ip;
+
+  Future<bool> connectionStatus()async{
+    bool f;
+    try {
+      var response =await  post(url , body: {
+        "command": "connectionStatus",
+      }).timeout(Duration(milliseconds: 500));
+      if (response.statusCode == 200) f= true;
+      else f=false;
+    }catch(e){
+
+      f=false;
+
+
+    }
+
+    return f;
+
+
+  }
   // account section
   Future<Map<String, dynamic>> logIn(String username, String password) async {
 
@@ -115,24 +145,24 @@ class DatabaseManeger {
 
 //geolocator api section
   latLongToCity(double lat, double long) async {
-    Uri geo = Uri.http("geocode.xyz", "${lat},$long",
-        {"geoit": "json", "auth": geocodeApiAuth});
-    var response = await get(geo);
-    dynamic decodedResponse = jsonDecode(response.body);
-    return {
-      "city": decodedResponse["city"],
-      "addr": decodedResponse["staddress"]
-    };
+    var response = await post(url,body: {
+      "lat":lat.toString(),
+      "long":long.toString(),
+      "command":"latLongToCity"
+
+    });
+    return jsonDecode(response.body);
+
   }
   cityToLatLang(String city) async {
-    Uri geo = Uri.http("geocode.xyz", "$city",
-        {"geoit": "json", "auth": geocodeApiAuth});
-    var response = await get(geo);
-    dynamic decodedResponse = jsonDecode(response.body);
-    return {
-      "positionLong": decodedResponse["longt"],
-      "positionLat": decodedResponse["latt"]
-    };
+
+    var response = await post(url,body: {
+      "data":city,
+      "command":"cityToLatLang"
+
+    });
+    return jsonDecode(response.body);
+
   }
   infoChecker(String? city , String username , String password ,String id) async {
 
@@ -144,16 +174,19 @@ class DatabaseManeger {
     });
     Map<String ,dynamic> bdresponse = jsonDecode(response.body);
     if(city!=null){
-      Uri geo = Uri.http("geocode.xyz", "$city",
-          {"geoit": "json", "auth": geocodeApiAuth});
-      response = await get(geo);
-      Map<String ,dynamic> georesponse = jsonDecode(response.body);
-      bdresponse["city"]=georesponse["standard"]==null ?null :georesponse["standard"]["city"];
+
+      Map<String ,dynamic> georesponse= await cityToLatLang(city);
+      if(georesponse["positionLong"]== null) bdresponse["city"]=null;
+      else{
+        var t=await latLongToCity(double.parse(georesponse["positionLat"].toString()),double.parse(georesponse["positionLong"].toString()));
+        bdresponse["city"]=t["city"];
+
+      }
     }
 
 
 
-     return bdresponse;
+    return bdresponse;
 
   }
 

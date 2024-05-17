@@ -1,6 +1,6 @@
 import 'package:get/get.dart';
 
-import '../Modules/DatabaseManeger.dart';
+import 'package:irefighter/modules/DatabaseManeger.dart';
 
 class AccountSettingsController extends GetxController{
   late Map<String , dynamic > accountInfo;

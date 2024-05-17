@@ -13,6 +13,7 @@ class FireFighterInterface extends StatelessWidget {
     return GetBuilder<InterfaceControler>(
       init: InterfaceControler(firefighter),
       builder: (controller) {
+        controller.cnx();
         return Scaffold(
             body: controller.mainscreen,
             bottomNavigationBar: BottomNavigationBar(
