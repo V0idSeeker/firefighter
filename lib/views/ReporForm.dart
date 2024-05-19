@@ -193,7 +193,7 @@ class ReportForm extends StatelessWidget {
                                                   );
                                                 return styler.returnDialog(
                                                   title: snapshot.data!,
-                                                  content: Container(),
+                                                  content: SizedBox(height: 20,),
                                                   actions: [
                                                     ElevatedButton(
                                                       onPressed: () {
