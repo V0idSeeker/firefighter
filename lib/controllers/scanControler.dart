@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:camera/camera.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_sound/public/flutter_sound_recorder.dart';
 import 'package:flutter_vision/flutter_vision.dart';
 import 'package:geolocator/geolocator.dart';
@@ -31,6 +32,7 @@ class ScanControler extends GetxController {
   late FlutterVision vision;
   late Report report;
   late DatabaseManeger db;
+  double currentZoomLevel = 1.0, maxZoomLevel = 1.0;
 
   @override
   onInit() {
@@ -64,6 +66,22 @@ class ScanControler extends GetxController {
     isVideoRecording = false;
 
     update(["CameraControls"]);
+  }
+
+  void focusOnPoint(Offset point, BoxConstraints constraints) async {
+    if (cameraController != null) {
+      double x = point.dx / constraints.maxWidth;
+      double y = point.dy / constraints.maxHeight;
+      await cameraController!.setFocusPoint(Offset(x, y));
+    }
+  }
+  void setZoomLevel(double zoomLevel) async {
+    if (cameraController != null) {
+      double newZoomLevel = zoomLevel.clamp(1.0, maxZoomLevel);
+      await cameraController!.setZoomLevel(newZoomLevel);
+      currentZoomLevel = newZoomLevel;
+      update(['CameraControls']); // Update the UI
+    }
   }
 
   startVideoRecord() async {
@@ -147,6 +165,7 @@ class ScanControler extends GetxController {
         });
       });
       cameraController.setFlashMode(FlashMode.off);
+      maxZoomLevel = await cameraController.getMaxZoomLevel() ;
       isCameraInitialised = true;
       update();
     } else
@@ -198,7 +217,7 @@ class ScanControler extends GetxController {
         double y1 = double.parse(firstValue['box'][2].toString());
         double y2 = double.parse(firstValue['box'][3].toString());
         if (x - x1 + y - x2 > 20)
-          print("cords :: x1 : $x1, y1: $y1, x2 : $x2 , y2: $y2");
+
 
         h = 100; //y2-y1;
         w = 100; //x2-x1;
@@ -209,14 +228,13 @@ class ScanControler extends GetxController {
         timer++;
       }
 
-      if (timer >= 20) {
+      if (timer >= 25) {
         timer = 0;
         detect = false;
-        w = 0;
-        h = 0;
+
       }
 
-      update();
+      update(["CameraBorder","CameraControls"]);
     }
   }
 }

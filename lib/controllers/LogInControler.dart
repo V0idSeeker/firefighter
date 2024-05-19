@@ -26,6 +26,7 @@ bool isConnected=true;
 Future<void> cnx() async {
   bool t = await db.connectionStatus();
 
+
   if(isConnected!=t)isConnected=t;
 
 }

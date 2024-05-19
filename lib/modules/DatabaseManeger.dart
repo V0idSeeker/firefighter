@@ -29,10 +29,11 @@ class DatabaseManeger {
     try {
       var response =await  post(url , body: {
         "command": "connectionStatus",
-      }).timeout(Duration(milliseconds: 500));
+      }).timeout(Duration(milliseconds: 800));
       if (response.statusCode == 200) f= true;
       else f=false;
     }catch(e){
+
 
       f=false;
 
@@ -54,6 +55,7 @@ class DatabaseManeger {
     if (response.statusCode != 200) return {"Error": "Connection error"};
     List<dynamic> decodedResponse = jsonDecode(response.body);
 
+
     if(decodedResponse[0]==null) return {"Error": "Invalid information "};
     return decodedResponse[0];
   }
@@ -61,7 +63,6 @@ class DatabaseManeger {
     addAccountData["command"] ="updateAccount";
     var response = await post(url, body: addAccountData);
 
-    print(response.body);
     Map<String ,dynamic> decodedResponse = jsonDecode(response.body);
     return decodedResponse["success"]==true;
 
@@ -92,7 +93,7 @@ class DatabaseManeger {
       "newStatus" : newStatus.toString()
     });
     Map<String ,dynamic> decodedResponse = jsonDecode(response.body);
-    print("dfdf $decodedResponse");
+
     return bool.parse(decodedResponse["success1"].toString()) && bool.parse(decodedResponse["success2"].toString());
 
   }

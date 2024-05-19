@@ -3,9 +3,11 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:irefighter/controllers/scanControler.dart';
+import 'package:irefighter/modules/Styler.dart';
 
 class ReportForm extends StatelessWidget {
-  const ReportForm({super.key});
+   ReportForm({super.key});
+  final Styler styler = Styler();
 
   @override
   Widget build(BuildContext context) {
@@ -14,130 +16,216 @@ class ReportForm extends StatelessWidget {
         builder: (controller) {
           return Scaffold(
 
-            body: Center(
-              child: Builder(
-                builder: (context) {
-
-                  final formkey =  GlobalKey<FormState>();
+            body: Container(
+              decoration: styler.orangeBlueBackground(),
+              child: Center(
+                child: Builder(builder: (context) {
+                  final formkey = GlobalKey<FormState>();
                   return Form(
                     key: formkey,
                     child: Container(
-                      width: MediaQuery.of(context).size.width/1.5,
-                      height: MediaQuery.of(context).size.height/1.5,
+                      padding: EdgeInsets.all(16.0),
+                      width: MediaQuery.of(context).size.width / 1.2,
+                      height: MediaQuery.of(context).size.height / 1.2,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12.0),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.5),
+                            spreadRadius: 5,
+                            blurRadius: 7,
+                            offset: Offset(0, 3), // changes position of shadow
+                          ),
+                        ],
+                      ),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
-
-
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text("Report Form" , style:Theme.of(context).textTheme.headlineMedium),
-
-                          Text("All Information  that isn't autofill-ed is optional", style: TextStyle(color: Colors.grey),),
-                          TextFormField(
-                            readOnly: true,
-                            initialValue: controller.isPictureMode ? "Picture" : "Video",
-                            decoration: InputDecoration(label: Text("Media Type :")),
+                          Center(
+                            child: Text(
+                              "Report Form",
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .headline5!
+                                  .copyWith(color: styler.primaryColor),
+                            ),
+                          ),
+                          Center(
+                            child: Text(
+                              "All information that isn't autofilled is optional",
+                              style: TextStyle(color: Colors.grey),
+                              textAlign: TextAlign.center,
+                            ),
                           ),
                           TextFormField(
                             readOnly: true,
-                            initialValue:controller.report.reportDate.toString(),
-                            decoration: InputDecoration(label: Text("Date :")),
-
-
+                            initialValue:
+                            controller.isPictureMode ? "Picture" : "Video",
+                            decoration: InputDecoration(
+                              labelText: "Media Type",
+                              border: OutlineInputBorder(),
+                            ),
                           ),
                           TextFormField(
-                            decoration: InputDecoration(label: Text("Add Description" )
-                            , hintText: "Not Required"),
-                            validator: (value){
-                              if( value!.isNotEmpty && !RegExp(r'^[a-zA-Z0-9 ]+$').hasMatch(value.toString())) return "Invalid Discription ";
+                            readOnly: true,
+                            initialValue: controller.report.reportDate.toString(),
+                            decoration: InputDecoration(
+                              labelText: "Date",
+                              border: OutlineInputBorder(),
+                            ),
+                          ),
+                          TextFormField(
+                            decoration: InputDecoration(
+                              labelText: "Add Description",
+                              hintText: "Not Required",
+                              border: OutlineInputBorder(),
+                            ),
+                            validator: (value) {
+                              if (value!.isNotEmpty &&
+                                  !RegExp(r'^[a-zA-Z0-9 ]+$')
+                                      .hasMatch(value.toString())) {
+                                return "Invalid Description";
+                              }
                               controller.report.setDescription(value);
                             },
-
                           ),
                           TextFormField(
-                            decoration: InputDecoration(label: Text("Add Phone Number"),hintText: "Not Required"),
-                            validator: (value){
-                              if(value!.isNotEmpty &&  !RegExp(r'^\+?\d{1,3}?[0-9]{9}$').hasMatch(value.toString())) return "Invalid Phone Number";
+                            decoration: InputDecoration(
+                              labelText: "Add Phone Number",
+                              hintText: "Not Required",
+                              border: OutlineInputBorder(),
+                            ),
+                            validator: (value) {
+                              if (value!.isNotEmpty &&
+                                  !RegExp(r'^\+?\d{1,3}?[0-9]{9}$')
+                                      .hasMatch(value.toString())) {
+                                return "Invalid Phone Number";
+                              }
                               controller.report.setPhoneNumber(value);
-                              print("\n phobe set \n");
-
+                              print("\n phone set \n");
                             },
-
                           ),
-
-
                           GetBuilder<ScanControler>(
                               id: "audioRecorder",
                               builder: (controller) {
-
                                 return Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     ElevatedButton(
-                                        onPressed: () {
-                                          if (controller.isVocalRecording) {
-                                            controller.stopVocalRecord();
-                                          } else {
-                                            controller.startVocalRecord();
-                                          }
-                                        },
-                                        child: Text(controller.isVocalRecording? "Stop Recording " : "Record")),
-                                    Text(controller.report.audioPath!=null ? "Audio Recorded" : "No Audio Recording"),
-
+                                      onPressed: () {
+                                        if (controller.isVocalRecording) {
+                                          controller.stopVocalRecord();
+                                        } else {
+                                          controller.startVocalRecord();
+                                        }
+                                      },
+                                      child: Text(
+                                          controller.isVocalRecording
+                                              ? "Stop Recording"
+                                              : "Record",
+                                          style: TextStyle(color: Colors.white)),
+                                      style: ElevatedButton.styleFrom(
+                                        primary: styler.primaryColor,
+                                      ),
+                                    ),
+                                    SizedBox(height: 8.0),
+                                    Text(
+                                      controller.report.audioPath != null
+                                          ? "Audio Recorded"
+                                          : "No Audio Recording",
+                                      style: TextStyle(color: Colors.grey),
+                                    ),
                                   ],
                                 );
                               }),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: [
-                              ElevatedButton(onPressed: (){
-                                Get.back();
-                              }, child: Text("Go Back")),
-                              ElevatedButton(onPressed: ()async{
-                                if(!formkey.currentState!.validate()) return null;
+                              ElevatedButton(
+                                onPressed: () {
+                                  Get.back();
+                                },
+                                child: Text("Go Back"),
+                                style: ElevatedButton.styleFrom(
+                                  primary: Colors.grey,
+                                ),
+                              ),
+                              ElevatedButton(
+                                onPressed: () async {
+                                  if (!formkey.currentState!.validate()) return;
 
-
-
-                                showDialog(
-                                    barrierDismissible: false,
-                                    context: context, builder: (context){
-
-                                  return PopScope(
-                                    canPop: false,
-                                    child: FutureBuilder(future: controller.sendReport(), builder: (context , snapshot){
-                                      if(snapshot.connectionState==ConnectionState.waiting) return AlertDialog(title: Text("Sending Report"), content: Container(
-                                          width: MediaQuery.of(context).size.width/2,
-                                          height: MediaQuery.of(context).size.height/6,
-                                          alignment: Alignment.center,child: CircularProgressIndicator()),);
-                                      if(snapshot.hasError) return AlertDialog(title: Text("Error"),content: Text("Report did not get sent "),
-                                        actions: [
-                                          ElevatedButton(onPressed: (){
-                                            Navigator.of(context).pop();
-
-                                          }, child: Text("Close"))
-                                        ],);
-                                      return AlertDialog.adaptive(
-                                        title: Text(snapshot.data!),
-                                        actions: [
-                                          ElevatedButton(onPressed: (){
-                                            Navigator.of(context).pop();
-                                            Get.back();
-                                          }, child: Text("Return"))
-                                        ],
-                                      );
-
-                                    }),
-                                  );
-
-                                });
-                              }, child: Text("Send Report")),
+                                  showDialog(
+                                      barrierDismissible: false,
+                                      context: context,
+                                      builder: (context) {
+                                        return PopScope(
+                                          canPop: false,
+                                          child: FutureBuilder(
+                                              future: controller.sendReport(),
+                                              builder: (context, snapshot) {
+                                                if (snapshot.connectionState ==
+                                                    ConnectionState.waiting)
+                                                  return styler.returnDialog(
+                                                    title: "Sending Report",
+                                                    content: LinearProgressIndicator(),
+                                                    actions: []
+                                                  );
+                                                if (snapshot.hasError)
+                                                  return styler.returnDialog(
+                                                    title: "Error",
+                                                    content: Text(
+                                                        "Report did not get sent "),
+                                                    actions: [
+                                                      ElevatedButton(
+                                                        onPressed: () {
+                                                          Navigator.of(context)
+                                                              .pop();
+                                                        },
+                                                        child: Text("Close"),
+                                                        style: ElevatedButton
+                                                            .styleFrom(
+                                                          primary: Colors.red,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  );
+                                                return styler.returnDialog(
+                                                  title: snapshot.data!,
+                                                  content: Container(),
+                                                  actions: [
+                                                    ElevatedButton(
+                                                      onPressed: () {
+                                                        Navigator.of(context)
+                                                            .pop();
+                                                        Get.back();
+                                                      },
+                                                      child: Text("Return"),
+                                                      style: ElevatedButton
+                                                          .styleFrom(
+                                                        primary: styler
+                                                            .primaryColor,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                );
+                                              }),
+                                        );
+                                      });
+                                },
+                                child: Text("Send Report"),
+                                style: ElevatedButton.styleFrom(
+                                  primary: styler.primaryColor,
+                                ),
+                              ),
                             ],
-                          )
-
-
+                          ),
                         ],
                       ),
                     ),
                   );
-                }
+                }),
               ),
             ),
           );

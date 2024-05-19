@@ -1,22 +1,23 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:get/get.dart';
 import 'package:get/get_state_manager/get_state_manager.dart';
 import 'package:irefighter/modules/FireFighter.dart';
+import 'package:irefighter/modules/Styler.dart';
 import 'package:latlong2/latlong.dart';
 
 import '../controllers/mapViewController.dart';
 import '../modules/Fire.dart';
 
 class MapView extends StatelessWidget {
-  FireFighter firefighter ;
-   MapView(this.firefighter,{super.key});
+  FireFighter firefighter;
+  MapView(this.firefighter, {super.key});
+  final styler = Styler();
 
   @override
   Widget build(BuildContext context) {
     return GetBuilder<MapViewController>(
-        id:"Interface",
+        id: "Interface",
         init: MapViewController(firefighter),
         builder: (controller) {
           controller.setupFireMap();
@@ -28,104 +29,162 @@ class MapView extends StatelessWidget {
                 children: [
                   GetBuilder<MapViewController>(
                       id: "FiresMap",
-                      builder: (controller){
+                      builder: (controller) {
                         return FlutterMap(
                           mapController: controller.mapController,
                           options: controller.mapOptions,
                           children: [
                             TileLayer(
                               urlTemplate:
-                              'https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}',
+                                  'https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}',
                             ),
                             GetBuilder<MapViewController>(
                                 id: "respondentPosition",
                                 builder: (controller) {
-                                  return MarkerLayer(markers: [
-                                    Marker(
+                                  return MarkerLayer(
+                                    markers: [
+                                      Marker(
                                         point: controller.currentPosition,
-                                        builder: (context)=>Icon(Icons.pin_drop,color: Colors.blue,))
-                                  ]);
+                                        builder: (context) => Icon(
+                                            Icons.pin_drop,
+                                            color: Colors.blue),
+                                      )
+                                    ],
+                                  );
                                 }),
                             CircleLayer(
                               circles: controller.activeFiresList == null
                                   ? []
                                   : controller.activeFiresList!
-                                  .map((e) => CircleMarker(
-                                  point: LatLng(e.optimalPositionLat,
-                                      e.optimalPositionLong),
-                                  radius: 80,
-                                  color:  Colors.red.withOpacity(0.6),
-
-                                  useRadiusInMeter: true))
-                                  .toList(),
+                                      .map((e) => CircleMarker(
+                                            point: LatLng(e.optimalPositionLat,
+                                                e.optimalPositionLong),
+                                            radius: 80,
+                                            color: Colors.red.withOpacity(0.6),
+                                            useRadiusInMeter: true,
+                                          ))
+                                      .toList(),
                             )
                           ],
                         );
+                      }),
+                  Positioned(
+                    top: 20,
+                    left: 20,
+                    child: IconButton(
 
-                  }),
+                        onPressed: () {
+                          controller.moveMap(controller.currentPosition);
+                        },
+                        icon: Icon(Icons.pin_drop_rounded)),
+                  ),
                   GetBuilder<MapViewController>(
                       id: "FiresList",
                       builder: (controller) {
                         return AnimatedContainer(
-                          height: MediaQuery.of(context).size.height*0.9*controller.listSlider,
+                          height: MediaQuery.of(context).size.height *
+                              0.9 *
+                              controller.listSlider,
                           color: Colors.white,
-
                           duration: Duration(milliseconds: 300),
-                          child: Column(children: [
-                            Center(child: ElevatedButton(onPressed: ()=>controller.listController(),child: Text("Fires"))),
-                            Expanded(
-
-                              child: controller.activeFiresList== null ||
-                                  controller.activeFiresList!.isEmpty
-                                  ? Text("No Fires")
-                                  : ListView.separated(
-                                  separatorBuilder: (context, index) =>
-                                      Divider(color: Colors.grey,),
-                                  itemCount:
-                                  controller.activeFiresList!.length,
-                                  itemBuilder: (context, index) {
-                                    Fire fir =
-                                    controller.activeFiresList![index];
-                                    return ListTile(
-                                      title: Text(fir.optimalAddr),
-                                      subtitle: Text(
-                                        "${fir.initialDate?.year}-${fir.initialDate?.month}-${fir.initialDate?.day} "
-                                          ),
-                                      onTap: () {
-                                        controller.moveMap(LatLng(
-                                            fir.optimalPositionLat,
-                                            fir.optimalPositionLong));
-                                      },
-                                      trailing: ElevatedButton(
-                                        child: Text("update to ${fir.fireStatus=="active"? "processing" : "treated" }"),
-                                        onPressed: () async {
-                                        bool  result =await controller.updateFireStatus(fir.fireId!, fir.fireStatus=="active"? "processing" : "treated");
-                                        if(result) {
-                                          Get.snackbar("Success","");
-                                          await controller.setupFireMap();
-                                        }
-                                        else {
-                                          Get.snackbar("Error","");
-                                        }
-
-                                          
-                                        },
+                          child: Column(
+                            children: [
+                              Container(
+                                padding: EdgeInsets.all(8.0),
+                                color: Styler().primaryColor,
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceAround,
+                                  children: [
+                                    Image.asset(
+                                      'assets/logo.png',
+                                      height: 30,
+                                    ),
+                                    ElevatedButton(
+                                      style: styler.editButtonStyle(),
+                                        onPressed: () =>
+                                            controller.listController(),
+                                        child: Icon(
+                                          controller.listSlider == 0.4
+                                              ? Icons.arrow_drop_down_outlined
+                                              : Icons.arrow_drop_up_outlined,
+                                          size: 20,
+                                          color: styler.primaryColor,
+                                        )),
+                                    Text(
+                                      " Fires ",
+                                      style: TextStyle(
+                                        color: Styler().backgroundColor,
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.bold,
                                       ),
-
-
-                                    );
-                                  }),
-                            ),
-
-                          ]),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Expanded(
+                                child: controller.activeFiresList == null ||
+                                        controller.activeFiresList!.isEmpty
+                                    ? Text("No Fires",
+                                        style: styler
+                                            .themeData.textTheme.bodyLarge)
+                                    : ListView.separated(
+                                        separatorBuilder: (context, index) =>
+                                            Divider(color: Colors.grey),
+                                        itemCount:
+                                            controller.activeFiresList!.length,
+                                        itemBuilder: (context, index) {
+                                          Fire fire = controller
+                                              .activeFiresList![index];
+                                          return ListTile(
+                                            title: Text(fire.optimalAddr,
+                                                style: styler.themeData
+                                                    .textTheme.bodyLarge),
+                                            subtitle: Text(
+                                              "${fire.initialDate?.year}-${fire.initialDate?.month}-${fire.initialDate?.day}",
+                                              style: styler.themeData.textTheme
+                                                  .bodySmall,
+                                            ),
+                                            onTap: () {
+                                              controller.moveMap(LatLng(
+                                                  fire.optimalPositionLat,
+                                                  fire.optimalPositionLong));
+                                            },
+                                            trailing: ElevatedButton(
+                                              child: Text(
+                                                  "Update to ${fire.fireStatus == "active" ? "processing" : "treated"}",
+                                                  style: styler.themeData
+                                                      .textTheme.bodySmall),
+                                              onPressed: () async {
+                                                bool result = await controller
+                                                    .updateFireStatus(
+                                                        fire.fireId!,
+                                                        fire.fireStatus ==
+                                                                "active"
+                                                            ? "processing"
+                                                            : "treated");
+                                                if (result) {
+                                                  styler.showSnackBar("Success", "");
+                                                  await controller
+                                                      .setupFireMap();
+                                                } else {
+                                                  styler.showSnackBar("Error", "");
+                                                }
+                                              },
+                                              style:
+                                                  styler.elevatedButtonStyle(),
+                                            ),
+                                          );
+                                        }),
+                              ),
+                            ],
+                          ),
                         );
                       }),
-
                 ],
               ),
             ),
           );
-
         });
   }
 }
