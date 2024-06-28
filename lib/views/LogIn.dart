@@ -45,7 +45,7 @@ class LogIn extends StatelessWidget {
                           SizedBox(height: 20.0),
                           // Welcome Text
                           Text(
-                            'Welcome Back',
+                            'Flame Commander',
                             style: Theme.of(context).textTheme.headlineLarge?.copyWith(color: Theme.of(context).hintColor),
                           ),
                           SizedBox(height: 80.0),

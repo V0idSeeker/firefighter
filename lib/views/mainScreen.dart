@@ -8,7 +8,7 @@ import '../controllers/interfaceControler.dart';
 class FireFighterInterface extends StatelessWidget {
   FireFighter firefighter;
   FireFighterInterface(this.firefighter, {super.key});
-  final styler=Styler();
+  final styler = Styler();
 
   @override
   Widget build(BuildContext context) {
@@ -44,11 +44,74 @@ class FireFighterInterface extends StatelessWidget {
               },
               items: [
                 BottomNavigationBarItem(
-                    icon: Icon(Icons.map), label: "Fire Map"),
+                    icon: Container(
+                        decoration: BoxDecoration(
+                          color: controller.index == 0
+                              ? Colors.white
+                              : Colors.transparent,
+                          borderRadius: BorderRadius.circular(8),
+                          boxShadow: controller.index == 0
+                              ? [
+                                  BoxShadow(
+                                    color: Colors.black26,
+                                    blurRadius: 10,
+                                    offset: Offset(0, 4),
+                                  ),
+                                ]
+                              : [],
+                        ),
+                        child: Padding(
+                          padding:
+                              EdgeInsets.all(controller.index == 0 ? 8.0 : 0.0),
+                          child: Icon(Icons.map),
+                        )),
+                    label: "Fire Map"),
                 BottomNavigationBarItem(
-                    icon: Icon(Icons.camera), label: "Camera"),
+                    icon: Container(
+                        decoration: BoxDecoration(
+                          color: controller.index == 1
+                              ? Colors.white
+                              : Colors.transparent,
+                          borderRadius: BorderRadius.circular(8),
+                          boxShadow: controller.index == 1
+                              ? [
+                            BoxShadow(
+                              color: Colors.black26,
+                              blurRadius: 10,
+                              offset: Offset(0, 4),
+                            ),
+                          ]
+                              : [],
+                        ),
+                        child: Padding(
+                          padding:
+                          EdgeInsets.all(controller.index == 1 ? 8.0 : 0.0),
+                          child: Icon(Icons.camera),
+                        )),
+                     label: "Camera"),
                 BottomNavigationBarItem(
-                    icon: Icon(Icons.settings), label: "Account Settings"),
+                    icon: Container(
+                        decoration: BoxDecoration(
+                          color: controller.index == 2
+                              ? Colors.white
+                              : Colors.transparent,
+                          borderRadius: BorderRadius.circular(8),
+                          boxShadow: controller.index == 2
+                              ? [
+                            BoxShadow(
+                              color: Colors.black26,
+                              blurRadius: 10,
+                              offset: Offset(0, 4),
+                            ),
+                          ]
+                              : [],
+                        ),
+                        child: Padding(
+                          padding:
+                          EdgeInsets.all(controller.index == 2 ? 8.0 : 0.0),
+                          child: Icon(Icons.settings),
+                        )),
+                     label: "Account Settings"),
               ],
             ));
       },

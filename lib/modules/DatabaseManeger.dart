@@ -29,7 +29,7 @@ class DatabaseManeger {
     try {
       var response =await  post(url , body: {
         "command": "connectionStatus",
-      }).timeout(Duration(milliseconds: 800));
+      }).timeout(Duration(seconds: 7,milliseconds: 800));
       if (response.statusCode == 200) f= true;
       else f=false;
     }catch(e){

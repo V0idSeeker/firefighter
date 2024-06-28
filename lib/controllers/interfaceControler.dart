@@ -18,7 +18,7 @@ class InterfaceControler extends GetxController {
   late DatabaseManeger db;
   late Widget mainscreen ;
   Styler styler=Styler();
-  int index=0;
+  int index=1;
   bool isConnected = true;
   InterfaceControler(this.firefighter);
 
